@@ -60,18 +60,6 @@ def most_busy_users(df):
 
 def create_wordcloud(selected_user,df):
 
-#if it is 'Overall' then df will remain as same as before . that is why we did not write code for this
-#if not then df will get change,
-
-
-    #if selected_user != 'Overall':
-     #   df = df[df['users'] == selected_user]
-      #  wc =WordCloud(width=500,height=500,min_font_size=10,background_color='white')
-       # df_wc = wc.generate(df['messages'].str.cat(sep=" "))#generate() function basically generate a image of words. it is taking words from the column of 'messages' of df
-
-        #return df_wc
-
-
     if selected_user == 'Overall':
 
         f = open('stop words hinglish.txt', 'r')
@@ -150,13 +138,68 @@ def most_common_words(selected_user,df):
         return most_common_df
 
 def emoji_helper(selected_user,df):
+    if selected_user == 'Overall':
+        #df = df[df['users'] == selected_user]
+
+        emojis = []
+        for message in df['messages']:
+            emojis.extend([c for c in message if c in emoji.UNICODE_EMOJI['en']])
+
+        emoji_df = pd.DataFrame(Counter(emojis).most_common(len(Counter(emojis))))
+
+        return emoji_df
+    else:
+        new_df = df[df['users'] == selected_user]
+        emojis = []
+        for message in new_df['messages']:
+            emojis.extend([c for c in message if c in emoji.UNICODE_EMOJI['en']])
+
+        emoji_df = pd.DataFrame(Counter(emojis).most_common(len(Counter(emojis))))
+
+        return emoji_df
+
+def montly_timeline(selected_user,df):
+
     if selected_user != 'Overall':
-        df = df[df['users'] == selected_user]
+        df = df[df['users']==selected_user]
 
-    emojis = []
-    for message in df['messages']:
-        emojis.extend([c for c in message if c in emoji.UNICODE_EMOJI['en']])
+    timeline = df.groupby(['year', 'month_num', 'month']).count()['messages'].reset_index()  # adding reset index will give u a dataframe
+    time = []
+    for i in range(timeline.shape[0]):
+        time.append(timeline['month'][i] + "-" + str(timeline['year'][i]))
+    timeline['time'] = time
 
-    emoji_df = pd.DataFrame(Counter(emojis).most_common(len(Counter(emojis))))
+    #here we are connecting only two column of a dataframe
+    message_df = timeline['messages']
+    time_df = timeline['time']
+    frames=[time_df,message_df]
+    result=pd.concat(frames,axis=1)#horizontal concat
 
-    return emoji_df
+    return result
+
+def daily_timeline(selected_user,df):
+
+    if selected_user != 'Overall':
+        df = df[df['users']==selected_user]
+    daily_timeline = df.groupby('only_date').count()['messages'].reset_index()
+
+    return daily_timeline
+
+def week_activity_map(selected_user,df):
+    if selected_user != 'Overall':
+        df = df[df['users']==selected_user]
+
+    return df['day_name'].value_counts()
+
+def month_activity_map(selected_user,df):
+    if selected_user != 'Overall':
+        df = df[df['users']==selected_user]
+
+    return df['month'].value_counts()
+
+def activity_heatmap(selected_user,df):
+    if selected_user != 'Overall':
+        df = df[df['users']==selected_user]
+    user_heatmap = df.pivot_table(index='day_name', columns='period', values='messages', aggfunc='count').fillna(0)
+
+    return user_heatmap

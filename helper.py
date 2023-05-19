@@ -53,10 +53,10 @@ def fetch_stats(selected_user,df):
 def most_busy_users(df):
     x = df['users'].value_counts().head()
 
-    df = round((df['users'].value_counts() / df.shape[0]) * 100, 2).reset_index().rename(
-        columns={'index': 'name', 'users': 'percent'})
+    most_busy_users_df = round((df['users'].value_counts() / df.shape[0]) * 100, 2).reset_index().rename(
+        columns={'index': 'name', 'users': 'percent'})  # using reset_index() function we can convert it into a dataframe after that we can rename columns name
 
-    return x,df
+    return x,most_busy_users_df
 
 def create_wordcloud(selected_user,df):
 
@@ -103,8 +103,8 @@ def create_wordcloud(selected_user,df):
 
 def most_common_words(selected_user,df):
     if selected_user == 'Overall':
-        temp = df[df['users'] != 'group notification']  # users except 'group notification'
-        temp = temp[temp['messages'] != '<Media omitted>\n']  # users and messages except 'group notification' and '<Media Omitted>\n'
+        temp = df[df['users'] != 'group notification']  # dataframe except 'group notification' users
+        temp = temp[temp['messages'] != '<Media omitted>\n']  # dataframe except 'group notification'users and '<Media Omitted>\n' messages
 
         f = open('stop words hinglish.txt', 'r')
         stop_words = f.read()
@@ -115,14 +115,14 @@ def most_common_words(selected_user,df):
                 if word not in stop_words:
                     words.append(word)
 
-        most_common_df = pd.DataFrame(Counter(words).most_common(20))#here we convert  words into a dataframe
+        most_common_words_df = pd.DataFrame(Counter(words).most_common(20))#here Counter used for get the frequency of the words which are in the 'words' list and we convert  'words' list into a dataframe where index column contain the words and value column has the frequency of the words.
 
-        return most_common_df
+        return most_common_words_df
 
     else:
         new_df = df[df['users'] == selected_user]
-        temp = new_df[df['users'] != 'group notification']  # users except 'group notification'
-        temp = temp[temp['messages'] != '<Media omitted>\n']  # users and messages except 'group notification' and '<Media Omitted>\n'
+        temp = new_df[df['users'] != 'group notification']  # dataframe except 'group notification' users
+        temp = temp[temp['messages'] != '<Media omitted>\n']  # dataframe(temp) except 'group notification'users and '<Media Omitted>\n' messages
 
         f = open('stop words hinglish.txt', 'r')
         stop_words = f.read()
@@ -133,9 +133,9 @@ def most_common_words(selected_user,df):
                 if word not in stop_words:
                     words.append(word)
 
-        most_common_df = pd.DataFrame(Counter(words).most_common(20))
+        most_common_words_df = pd.DataFrame(Counter(words).most_common(20))
 
-        return most_common_df
+        return most_common_words_df
 
 def emoji_helper(selected_user,df):
     if selected_user == 'Overall':

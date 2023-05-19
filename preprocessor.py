@@ -2,12 +2,13 @@ import re
 import pandas as pd
 
 def preprocess(data):
-    pattern = '\d{1,2}\/\d{1,2}\/\d{2},\s\d{1,2}:\d{2}\s[A-Z]{2}\s-\s'
+    pattern = '\d{1,2}\/\d{1,2}\/\d{2},\s\d{1,2}:\d{2}\s[A-Z]{2}\s-\s' #pattern or regular expression string of date and time.
 
     messages = re.split(pattern, data)[1:]
     dates = re.findall(pattern, data)
 
     df = pd.DataFrame({'user_message': messages, 'message_date': dates})
+
     # convert message data type
 
     df['message_date'] = pd.to_datetime(df['message_date'], format='%m/%d/%y, %I:%M %p - ')
@@ -49,7 +50,5 @@ def preprocess(data):
             period.append(str(hour) + "-" + str(hour + 1))
 
     df['period'] = period
-
-
 
     return df

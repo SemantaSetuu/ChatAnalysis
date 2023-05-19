@@ -8,22 +8,22 @@ st.sidebar.title("Chat Analyzer")
 
 upload_file= st.sidebar.file_uploader("Choose a file")
 if upload_file is not None:
-    bytes_data = upload_file.getvalue()
+    bytes_data = upload_file.getvalue()  #Read the file using bytes_data
 
     #here we will upload that will be consider as stream. we need to convert it to string
     #so
 
-    data = bytes_data.decode("utf-8")# decoded to string
+    data = bytes_data.decode("utf-8")# decode it to string
     ##st.text(data) #now data 's are printing in st.text
 
     df = preprocessor.preprocess(data)
     st.dataframe(df)
 
     # fetch unique users
-    user_list = df['users'].unique().tolist()
+    user_list = df['users'].unique().tolist() #in the users column of the df it will take all the users name and cover it in to a list which will be stored in a userlist
     user_list.remove('group notification')
     user_list.sort()
-    user_list.insert(0, "Overall")
+    user_list.insert(0, "Overall") #here the we are inserting Overll to the 0 position so that it will come automatically aftfer selecting file
 
     selected_user = st.sidebar.selectbox("Show  analysis wrt",user_list)
 
@@ -104,7 +104,7 @@ if upload_file is not None:
         #finding the busiest users in the group(Group Level)
         if selected_user == 'Overall':
             st.title('Most Busy Users')
-            x,new_df= helper.most_busy_users(df)
+            x,new_df = helper.most_busy_users(df)
             fig , ax = plt.subplots()
             col1,col2 = st.columns(2)
 

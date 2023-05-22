@@ -29,7 +29,7 @@ if upload_file is not None:
 
     if st.sidebar.button("Show Analysis"):
         #pass
-
+        st.title("Top Statistics")
         #stats area
         num_messages,words,num_media_messages, num_links = helper.fetch_stats(selected_user, df)
         col1, col2, col3, col4 = st.columns(4)
